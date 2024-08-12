@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db_for_test_app_Levinskiy
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: test_app_Levinskiy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    entrypoint: >
+      sh -c 'while ! nc -z db 5432; do sleep 1; done;
+             java -jar /app/PrimeNearshoreProject-1.0-SNAPSHOT.jar'
